@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 const categories = [
     "Все",
@@ -9,22 +9,23 @@ const categories = [
     "Закрытые",
 ];
 
-const Categories = () => {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const onClickCategory = (index) => {
-        setActiveIndex(index);
-    };
+const Categories = ({ value, onChangeCategory }) => {
+    // state add Home.jsx
+    // const [activeIndex, setActiveIndex] = useState(0);
+    // const onClickCategory = (index) => {
+    //     setActiveIndex(index);
+    // };
 
     return (
         <div className="categories">
             <ul>
-                {categories.map((item, index) => (
+                {categories.map((categoryName, index) => (
                     <li
                         key={index}
-                        className={activeIndex === index ? "active" : ""}
-                        onClick={() => onClickCategory(index)}
+                        className={value === index ? "active" : ""}
+                        onClick={() => onChangeCategory(index)}
                     >
-                        {item}
+                        {categoryName}
                     </li>
                 ))}
             </ul>
