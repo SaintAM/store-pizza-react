@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
@@ -23,7 +24,6 @@ const Home = ({ searchValue }) => {
     // });
     const sortType = useSelector((state) => state.filter.sort);
 
-
     useEffect(() => {
         const order = sortType.sortProperty.includes("-") ? "asc" : "desc";
         const category = categoryId > 0 ? `category=${categoryId}` : "";
@@ -32,15 +32,23 @@ const Home = ({ searchValue }) => {
 
         setIsLoading(true);
 
-        fetch(
-            `https://64861b03a795d24810b7b7ef.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
-        )
-            .then((res) => res.json())
-            .then((data) => {
-                setItems(data);
+        axios
+            .get(
+                `https://64861b03a795d24810b7b7ef.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
+            )
+            .then((res) => {
+                setItems(res.data);
                 setIsLoading(false);
-                window.onbeforeunload = () => window.scrollTo(0, 0);
             });
+        // fetch(
+        //     `https://64861b03a795d24810b7b7ef.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
+        // )
+        //     .then((res) => res.json())
+        //     .then((data) => {
+        //         setItems(data);
+        //         setIsLoading(false);
+        //     });
+        window.onbeforeunload = () => window.scrollTo(0, 0);
     }, [sortType, categoryId, searchValue, currentPage]);
 
     const pizzas = items.map((obj) => <PizzaBlock key={obj.id} {...obj} />);
