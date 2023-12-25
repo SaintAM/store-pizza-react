@@ -1,28 +1,35 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import axios, { Axios } from "axios";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import { SearchContext } from "../App";
+import qs from "qs";
 
 import Categories from "../components/Categories";
-import Sort from "../components/Sort";
+import Sort, { sortList } from "../components/Sort";
 import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
+import { useNavigate } from "react-router-dom";
+import { setFilters } from "../redux/slices/filterSlice";
 
 const Home = () => {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    // const [currentPage, setCurrentPage] = useState(1);
-    // useContext
+    const isSearch = useRef(false);
+    const isMounted = useRef(false);
+
+    const navigate = useNavigate();
+
     const { searchValue } = useContext(SearchContext);
     //redux
+    const dispatch = useDispatch();
     const categoryId = useSelector((state) => state.filter.categoryId);
-    const sortType = useSelector((state) => state.filter.sort);
+    const sort = useSelector((state) => state.filter.sort);
     const currentPage = useSelector((state) => state.filter.currentPage);
-    //useEffect
-    useEffect(() => {
-        const sortBy = sortType.sortProperty.replace("-", "");
-        const order = sortType.sortProperty.includes("-") ? "asc" : "desc";
+
+    const fetchPizzas = () => {
+        const sortBy = sort.sortProperty.replace("-", "");
+        const order = sort.sortProperty.includes("-") ? "asc" : "desc";
         const category = categoryId > 0 ? `category=${categoryId}` : "";
         const search = searchValue ? `&search=${searchValue}` : "";
 
@@ -36,8 +43,53 @@ const Home = () => {
                 setItems(res.data);
                 setIsLoading(false);
             });
-        // window.onbeforeunload = () => window.scrollTo(0, 0);
-    }, [sortType.sortProperty, categoryId, searchValue, currentPage]);
+    };
+
+    useEffect(() => {
+        window.onbeforeunload = () => window.scrollTo(0, 0);
+        // Если был первый рендер(isSearch) отправляем запрос за данными
+        if (!isSearch.current) fetchPizzas();
+        // в другом useEffect isSearch - станет true и этот useEffect не перересуется
+        // и после этого isSearch снова false
+        isSearch.current = false;
+    }, [sort.sortProperty, categoryId, searchValue, currentPage]);
+
+    useEffect(() => {
+        // ***isMounted - false не было первого рендера и мы не парсим данные в строку URL
+        if (isMounted.current) {
+            // Берем все наши актуальые данные с редакса, и превращаем в строку
+            const queryString = qs.stringify({
+                sort: sort.sortProperty,
+                categoryId,
+                currentPage,
+            });
+            // И передаем ее в адресную строку URL
+            navigate(`?${queryString}`);
+        }
+        // ***isMounted - true  был первый рендер, след. раз код выше сработает ^
+        isMounted.current = true;
+    }, [sort.sortProperty, categoryId, currentPage]);
+
+    useEffect(() => {
+        //Если в адресной строке есть параметры
+        if (window.location.search) {
+            //То мы их достаем (строчку), превращаем в объект и вырезаем "?" - substring
+            const params = qs.parse(window.location.search.substring(1));
+            // что бы передать sort (который объект) в редакс, делаем следующее:
+            const sort = sortList.find(
+                (obj) => obj.sortProperty === params.sort
+            );
+            // И передаем актуальные данные из адресной строки в редакс состояние
+            dispatch(
+                setFilters({
+                    ...params,
+                    sort,
+                })
+            );
+            // делаем (isSearch) - true чтобы повторно не отправились fetchPizzas данные
+            isSearch.current = true;
+        }
+    }, []);
 
     const pizzas = items.map((obj) => <PizzaBlock key={obj.id} {...obj} />);
     const skeletons = [...new Array(6)].map((_, i) => <Skeleton key={i} />);
