@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { onChangeSort } from "../redux/slices/filterSlice";
 
@@ -12,6 +12,7 @@ export const sortList = [
 ];
 
 const Sort = () => {
+    const sortRef = useRef();
     const [open, setOpen] = useState(false);
 
     const dispatch = useDispatch();
@@ -21,9 +22,24 @@ const Sort = () => {
         dispatch(onChangeSort(obj));
         setOpen(false);
     };
+    
+    useEffect(() => {
+        //создаем отдельно функцию в области видимости useEffect
+        const handleClickOutside = (event) => {
+            //данная функция закрывает попап окно за пределами попап-окна
+            if (!event.composedPath().includes(sortRef.current)) setOpen(false);
+        };
+        //обращаемся к обработчику события click и вызываем функцию выше
+        document.body.addEventListener("click", handleClickOutside);
+        return () => {
+            // если перешли на др. страницу компонент размонитуется чтобы handleClickOutside
+            // не пересоздавался кратно
+            document.body.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
 
     return (
-        <div className="sort">
+        <div className="sort" ref={sortRef}>
             <div className="sort__label">
                 <svg
                     width="10"
