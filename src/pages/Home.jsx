@@ -11,9 +11,10 @@ import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { setFilters } from "../redux/slices/filterSlice";
+import { setItems } from "../redux/slices/pizzaSlice";
 
 const Home = () => {
-    const [items, setItems] = useState([]);
+    // const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const isSearch = useRef(false);
     const isMounted = useRef(false);
@@ -23,10 +24,11 @@ const Home = () => {
     const { searchValue } = useContext(SearchContext);
     //redux
     const dispatch = useDispatch();
-    const categoryId = useSelector((state) => state.filter.categoryId);
-    const sort = useSelector((state) => state.filter.sort);
-    const currentPage = useSelector((state) => state.filter.currentPage);
-
+    const { categoryId, sort, currentPage } = useSelector(
+        (state) => state.filter
+    );
+    const items = useSelector((state) => state.pizza.items);
+        console.log(items);
     const fetchPizzas = async () => {
         const sortBy = sort.sortProperty.replace("-", "");
         const order = sort.sortProperty.includes("-") ? "asc" : "desc";
@@ -39,7 +41,7 @@ const Home = () => {
             const res = await axios.get(
                 `https://64861b03a795d24810b7b7ef.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
             );
-            setItems(res.data);
+            dispatch(setItems(res.data));
         } catch (error) {
             console.log("ERROR:", error);
         } finally {
