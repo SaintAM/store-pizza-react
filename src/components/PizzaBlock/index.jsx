@@ -12,7 +12,6 @@ const PizzaBlock = ({ id, title, price, imageUrl, sizes, types }) => {
     const cartItem = useSelector((state) =>
         state.cart.items.find((obj) => obj.id === id)
     );
-    console.log(cartItem);
 
     const addedCount = cartItem ? cartItem.count : 0;
 
