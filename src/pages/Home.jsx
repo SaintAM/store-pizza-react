@@ -10,11 +10,10 @@ import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
 
-import { setFilters } from "../redux/slices/filterSlice";
-import { fetchPizzas } from "../redux/slices/pizzaSlice";
+import { selectFilter, setFilters } from "../redux/slices/filterSlice";
+import { fetchPizzas, selectPizza } from "../redux/slices/pizzaSlice";
 
 const Home = () => {
-    // const [isLoading, setIsLoading] = useState(true);
     const isSearch = useRef(false);
     const isMounted = useRef(false);
 
@@ -23,20 +22,14 @@ const Home = () => {
     const { searchValue } = useContext(SearchContext);
     //redux
     const dispatch = useDispatch();
-    const { categoryId, sort, currentPage } = useSelector(
-        (state) => state.filter
-    );
-    const items = useSelector((state) => state.pizza.items);
-    let status = useSelector((state) => state.pizza.status);
+    const { categoryId, sort, currentPage } = useSelector(selectFilter);
+    const { items, status } = useSelector(selectPizza);
 
     const getPizzas = async () => {
         const sortBy = sort.sortProperty.replace("-", "");
         const order = sort.sortProperty.includes("-") ? "asc" : "desc";
         const category = categoryId > 0 ? `category=${categoryId}` : "";
         const search = searchValue ? `&search=${searchValue}` : "";
-
-        // setIsLoading(true);
-        // Get
 
         dispatch(fetchPizzas({ category, currentPage, sortBy, order, search }));
     };
@@ -101,7 +94,8 @@ const Home = () => {
                 <div className="content__fail">
                     <h2>Произошла ошибка</h2>
                     <p>
-                        К сожалению, питтсы не найдены😢<br /> Повторите попытку позже!
+                        К сожалению, питтсы не найдены😢
+                        <br /> Повторите попытку позже!
                     </p>
                 </div>
             ) : (

@@ -24,41 +24,23 @@ export const pizzaSlice = createSlice({
             state.items = action.payload;
         },
     },
-    // extraReducers: {
-    //     [fetchPizzas.pending]: (state) => {
-    //         state.status = "pending";
-    //         state.items = [];
-    //         console.log(state, "ожидание получения данных");
-    //     },
-    //     [fetchPizzas.fulfilled]: (state, action) => {
-    //         state.items = action.payload;
-    //         state.status = "succeeded";
-    //         console.log(state, " получение пицц");
-    //     },
-    //     [fetchPizzas.rejected]: (state) => {
-    //         state.status = "failed";
-    //         state.items = [];
-    //         console.log(state, "ошибка получения пицц");
-    //     },
     extraReducers: (builder) => {
-        builder.addCase(fetchPizzas.pending, (state, action) => {
+        builder.addCase(fetchPizzas.pending, (state) => {
             state.status = "pending";
             state.items = [];
-            console.log(state.status, "ожидание получения данных");
         });
         builder.addCase(fetchPizzas.fulfilled, (state, action) => {
             state.items = action.payload;
             state.status = "succeeded";
-            console.log(state.status, " получение пицц");
         });
-        builder.addCase(fetchPizzas.rejected, (state, action) => {
+        builder.addCase(fetchPizzas.rejected, (state) => {
             state.status = "failed";
             state.items = [];
-            console.log(state, "ошибка получения пицц");
         });
     },
-    // },
 });
+
+export const selectPizza = (state) => state.pizza;
 
 export const { setItems } = pizzaSlice.actions;
 
