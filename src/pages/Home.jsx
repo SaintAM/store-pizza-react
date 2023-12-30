@@ -1,21 +1,20 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { SearchContext } from "../App";
 import qs from "qs";
+import { useNavigate } from "react-router-dom";
 
 import Categories from "../components/Categories";
 import Sort, { sortList } from "../components/Sort";
 import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
-import { useNavigate } from "react-router-dom";
+
 import { setFilters } from "../redux/slices/filterSlice";
-import { setItems } from "../redux/slices/pizzaSlice";
+import { fetchPizzas } from "../redux/slices/pizzaSlice";
 
 const Home = () => {
-    // const [items, setItems] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    // const [isLoading, setIsLoading] = useState(true);
     const isSearch = useRef(false);
     const isMounted = useRef(false);
 
@@ -28,31 +27,24 @@ const Home = () => {
         (state) => state.filter
     );
     const items = useSelector((state) => state.pizza.items);
-        console.log(items);
-    const fetchPizzas = async () => {
+    let status = useSelector((state) => state.pizza.status);
+
+    const getPizzas = async () => {
         const sortBy = sort.sortProperty.replace("-", "");
         const order = sort.sortProperty.includes("-") ? "asc" : "desc";
         const category = categoryId > 0 ? `category=${categoryId}` : "";
         const search = searchValue ? `&search=${searchValue}` : "";
 
-        setIsLoading(true);
+        // setIsLoading(true);
         // Get
-        try {
-            const res = await axios.get(
-                `https://64861b03a795d24810b7b7ef.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}${search}`
-            );
-            dispatch(setItems(res.data));
-        } catch (error) {
-            console.log("ERROR:", error);
-        } finally {
-            setIsLoading(false);
-        }
+
+        dispatch(fetchPizzas({ category, currentPage, sortBy, order, search }));
     };
 
     useEffect(() => {
         window.onbeforeunload = () => window.scrollTo(0, 0);
         // Если был первый рендер(isSearch) отправляем запрос за данными
-        if (!isSearch.current) fetchPizzas();
+        if (!isSearch.current) getPizzas();
         // в другом useEffect isSearch - станет true и этот useEffect не перересуется
         // и после этого isSearch снова false
         isSearch.current = false;
@@ -105,9 +97,19 @@ const Home = () => {
                 <Sort />
             </div>
             <h2 className="content__title">Все пиццы</h2>
-            <div className="content__items">
-                {isLoading ? skeletons : pizzas}
-            </div>
+            {status === "failed" ? (
+                <div className="content__fail">
+                    <h2>Произошла ошибка</h2>
+                    <p>
+                        К сожалению, питтсы не найдены😢<br /> Повторите попытку позже!
+                    </p>
+                </div>
+            ) : (
+                <div className="content__items">
+                    {status === "pending" ? skeletons : pizzas}
+                </div>
+            )}
+
             <Pagination value={currentPage} />
         </>
     );

@@ -28,6 +28,16 @@ body {
         // grid-template-rows: repeat(2, 1fr);
         grid-column-gap: 11px;
     }
+    &__fail {
+        text-align: center;
+        height: 200px;
+        margin: 0 auto;
+        width: 340px;
+        h2{
+            font-weight: 700;
+            font-size: 32px;
+        }
+    }
 
     &__top {
         display: flex;
