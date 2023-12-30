@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, {  useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SearchContext } from "../App";
 import qs from "qs";
 import { useNavigate } from "react-router-dom";
 
@@ -19,10 +18,9 @@ const Home = () => {
 
     const navigate = useNavigate();
 
-    const { searchValue } = useContext(SearchContext);
     //redux
     const dispatch = useDispatch();
-    const { categoryId, sort, currentPage } = useSelector(selectFilter);
+    const { categoryId, sort, currentPage, searchValue } = useSelector(selectFilter);
     const { items, status } = useSelector(selectPizza);
 
     const getPizzas = async () => {
