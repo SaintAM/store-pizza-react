@@ -1,7 +1,7 @@
 import React, {  useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import qs from "qs";
-import { useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 
 import Categories from "../components/Categories";
 import Sort, { sortList } from "../components/Sort";
@@ -17,6 +17,7 @@ const Home = () => {
     const isMounted = useRef(false);
 
     const navigate = useNavigate();
+    
 
     //redux
     const dispatch = useDispatch();
@@ -50,7 +51,7 @@ const Home = () => {
                 categoryId,
                 currentPage,
             });
-            // И передаем ее в адресную строку URL
+            // И передаем ее в адресную строку URL для отображения
             navigate(`?${queryString}`);
         }
         // ***isMounted - true  был первый рендер, след. раз код выше сработает ^
