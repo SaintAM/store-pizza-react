@@ -1,12 +1,13 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import CartItem from "../components/CartItem";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../redux/store";
 import { clearItem, selectCart } from "../redux/slices/cartSlice";
+import CartItem from "../components/CartItem";
 import CartEmpty from "../components/CartEmpty";
 
-const Cart = () => {
-    const dispatch = useDispatch();
+const Cart: React.FC = () => {
+    const dispatch = useAppDispatch();
     const { totalPrice, items } = useSelector(selectCart);
     const onClickClear = () => {
         if (window.confirm("Очистить корзину?")) dispatch(clearItem());

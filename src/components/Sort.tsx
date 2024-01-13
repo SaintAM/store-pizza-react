@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { onChangeSort, selectFilter } from "../redux/slices/filterSlice";
+import { useSelector } from "react-redux";
+import { TSort, onChangeSort, selectFilter } from "../redux/slices/filterSlice";
+import { useAppDispatch } from "../redux/store";
 
-export const sortList = [
+export const sortList: TSort[] = [
     { name: "популярности ↑", sortProperty: "rating" },
     { name: "популярности ↓", sortProperty: "-rating" },
     { name: "цене ↑", sortProperty: "price" },
@@ -11,23 +12,27 @@ export const sortList = [
     { name: "алфавиту ↓", sortProperty: "-title" },
 ];
 
-const Sort = () => {
-    const sortRef = useRef();
+const Sort: React.FC = () => {
+    const sortRef = useRef<HTMLDivElement>(null);
     const [open, setOpen] = useState(false);
 
-    const dispatch = useDispatch();
-    const {sort} = useSelector(selectFilter);
+    const dispatch = useAppDispatch();
+    const { sort } = useSelector(selectFilter);
 
-    const onClickListItem = (obj) => {
+    const onClickListItem = (obj: TSort) => {
         dispatch(onChangeSort(obj));
         setOpen(false);
     };
-    
+
     useEffect(() => {
         //создаем отдельно функцию в области видимости useEffect
-        const handleClickOutside = (event) => {
+        const handleClickOutside = (event: MouseEvent) => {
             //данная функция закрывает попап окно за пределами попап-окна
-            if (!event.composedPath().includes(sortRef.current)) setOpen(false);
+            if (
+                sortRef.current &&
+                !event.composedPath().includes(sortRef.current)
+            )
+                setOpen(false);
         };
         //обращаемся к обработчику события click и вызываем функцию выше
         document.body.addEventListener("click", handleClickOutside);

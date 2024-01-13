@@ -1,7 +1,7 @@
-import React, {  useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import qs from "qs";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Categories from "../components/Categories";
 import Sort, { sortList } from "../components/Sort";
@@ -9,19 +9,20 @@ import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
 
-import { selectFilter, setFilters } from "../redux/slices/filterSlice";
+import { FilterSliceState, selectFilter, setFilters } from "../redux/slices/filterSlice";
 import { fetchPizzas, selectPizza } from "../redux/slices/pizzaSlice";
+import { useAppDispatch } from "../redux/store";
 
-const Home = () => {
+const Home: React.FC = () => {
     const isSearch = useRef(false);
     const isMounted = useRef(false);
 
     const navigate = useNavigate();
-    
 
     //redux
-    const dispatch = useDispatch();
-    const { categoryId, sort, currentPage, searchValue } = useSelector(selectFilter);
+    const dispatch = useAppDispatch();
+    const { categoryId, sort, currentPage, searchValue } =
+        useSelector(selectFilter);
     const { items, status } = useSelector(selectPizza);
 
     const getPizzas = async () => {
@@ -30,7 +31,15 @@ const Home = () => {
         const category = categoryId > 0 ? `category=${categoryId}` : "";
         const search = searchValue ? `&search=${searchValue}` : "";
 
-        dispatch(fetchPizzas({ category, currentPage, sortBy, order, search }));
+        dispatch(
+            fetchPizzas({
+                category,
+                currentPage: String(currentPage),
+                sortBy,
+                order,
+                search,
+            })
+        );
     };
 
     useEffect(() => {
@@ -72,7 +81,7 @@ const Home = () => {
                 setFilters({
                     ...params,
                     sort,
-                })
+                } as FilterSliceState)
             );
             // делаем (isSearch) - true чтобы повторно не отправились fetchPizzas данные
             isSearch.current = true;
@@ -103,7 +112,7 @@ const Home = () => {
                 </div>
             )}
 
-            <Pagination value={currentPage} />
+            <Pagination currentPage={currentPage} />
         </>
     );
 };
