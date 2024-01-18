@@ -33,7 +33,7 @@ body {
         height: 200px;
         margin: 0 auto;
         width: 340px;
-        h2{
+        h2 {
             font-weight: 700;
             font-size: 32px;
         }
@@ -163,6 +163,22 @@ body {
                 svg {
                     path:first-of-type {
                         display: none;
+                    }
+                }
+                &--disabled {
+                    opacity: 0.5;
+                    border-color: #8d8d8d;
+                    &:active{
+                        transform: none;
+                    }
+                    &:hover {
+                        background-color: transparent;
+                        svg path {
+                            fill: #8d8d8d;
+                        }
+                    }
+                    svg path {
+                        fill: #8d8d8d;
                     }
                 }
             }

@@ -12,7 +12,7 @@ export const sortList: TSort[] = [
     { name: "алфавиту ↓", sortProperty: "-title" },
 ];
 
-const Sort: React.FC = () => {
+const Sort: React.FC = React.memo(() => {
     const sortRef = useRef<HTMLDivElement>(null);
     const [open, setOpen] = useState(false);
 
@@ -82,6 +82,6 @@ const Sort: React.FC = () => {
             )}
         </div>
     );
-};
+});
 
 export default Sort;

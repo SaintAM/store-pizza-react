@@ -12,9 +12,9 @@ const categories = [
     "Закрытые",
 ];
 
-const Categories: React.FC = () => {
-    const dispatch = useAppDispatch()
-    const {categoryId} = useSelector(selectFilter)
+const Categories: React.FC = React.memo(() => {
+    const dispatch = useAppDispatch();
+    const { categoryId } = useSelector(selectFilter);
 
     return (
         <div className="categories">
@@ -32,6 +32,6 @@ const Categories: React.FC = () => {
             </ul>
         </div>
     );
-};
+});
 
 export default Categories;
