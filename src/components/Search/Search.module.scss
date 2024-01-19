@@ -1,5 +1,9 @@
 .root {
 	position: relative;
+	@media (max-width:875px) {
+		margin-top: 10px;
+		
+	}
 }
 .input {
     border: 1px solid rgba($color: #000000, $alpha: 0.1);
@@ -9,6 +13,10 @@
     font-size: 16px;
 		padding-left: 46px;
 		margin: 4px 10px;
+		@media (max-width:400px) {
+			width: 250px;
+			
+		}
 		&:hover{
 			border: 1px solid rgba($color: #000000, $alpha: 0.3);
 			background-color: #bababa1a;
