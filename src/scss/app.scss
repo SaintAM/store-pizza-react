@@ -202,6 +202,8 @@ body {
         padding-top: 30px;
         margin-top: 30px;
         @media (max-width: 620px) {
+            padding-top: 20px;
+            margin-top: 20px;
             display: grid;
             grid-template-columns: 2fr repeat(4, 1fr);
             grid-template-rows: repeat(2, 1fr);
